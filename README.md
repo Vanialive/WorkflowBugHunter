@@ -15,7 +15,7 @@ flowchart TD
     E -->|Pilih program lain| G["Pilih program lain<br/>Pilihan Customer"]
     E -->|Tunda| H["Tunda keputusan<br/>Belum eksekusi"]
     H -.kembali ke jadwal.-> A
-    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap ssesuai level & decker"]
+    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap <br>sesuai level & decker"]
     G --> I
     I --> |Basic| J1["H0 - Basic<br/> fogging"]
 

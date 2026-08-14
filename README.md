@@ -29,27 +29,125 @@ flowchart TD
 ```
 
 ### Catatan alur
-- Treatment terjadi sejak H0:
-- **Basic** = one-time treatment (fogging saja), selesai langsung di H0, tidak masuk cadence lanjutan.
+- Treatment terjadi sejak H0
+- **Basic** = one-time treatment (fogging saja), selesai langsung di H0, tidak masuk cadence lanjut
+- **Standard** → fogging + gel bait + sticky trap sejak H0, diulang di H+14 (2x/bulan)
+- **Premium** → fogging + gel bait + sticky trap (porsi lebih banyak) sejak H0, diulang di H+7, H+14, H+21 (4x/bulan)
 - **Persetujuan Program Treatment** dan **Eksekusi Treatment** terjadi di visit yang sama (H0) — bukan proses terpisah
 - **Pilih program lain** vs **Diskresi komposisi lapangan** adalah dua hal berbeda:
   - *Pilih program lain* = keputusan customer soal **level paket program** (basic/standard/premium), dicatat sebagai Pilihan Customer
-  - *Diskresi lapangan* = penyesuaian **komposisi material** (fog/bait/trap) di visit tertentu, independen dari leve mana yang dipilih
-- **H+28** bukan tahap treatment — itu batas siklus. Reorder jadi H+28 dihitung sebagai H0 baru
+  - *Diskresi lapangan* = penyesuaian **komposisi material** (fog/bait/trap) di visit tertentu, independen dari level mana yang dipilih, berdasarkan koordinasi TR&D dan PIC Lapangan
+- **H+28** bukan tahap treatment, jadi jika H+28 akan reorder dihitung sebagai H0 baru
 
-- **Cabang komposisi treatment terjadi sejak H0**, bukan cuma di tahap cadence:
-  - *Basic* → fogging saja, satu kali, selesai.
-  - *Standard* → fogging + gel bait + sticky trap sejak H0, diulang di H+14 (2x/bulan).
-  - *Premium* → fogging + gel bait + sticky trap (porsi lebih banyak) sejak H0, diulang di H+7, H+14, H+21 (4x/bulan).
-- **Persetujuan tier** dan **eksekusi H0** terjadi di visit yang sama — bukan proses terpisah yang bisa menunda treatment.
-- **Pilih program lain** vs **diskresi komposisi lapangan** adalah dua hal berbeda:
-  - *Pilih program lain* = keputusan customer soal **tier** (basic/standard/premium), dicatat sebagai rekomendasi vendor vs pilihan customer.
-  - *Diskresi lapangan* = penyesuaian **jumlah** material (titik gel bait, unit sticky trap) di visit tertentu — independen dari tier mana yang dipilih, berdasarkan koordinasi TR&D dan PIC lapangan.
-- **H+28** bukan tahap treatment — itu batas siklus. Reorder setelah H+28 dihitung sebagai H0 baru.
 
+## Skema database (ERD)
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ BUS : owns
+    BUS ||--o{ JADWAL_VISITASI : scheduled
+    JADWAL_VISITASI ||--o{ PLOTTING : assigns
+    PERSONEL ||--o{ PLOTTING : assigned_to
+    JADWAL_VISITASI ||--o{ INSPEKSI : produces
+    INSPEKSI ||--o{ INSPEKSI_AREA : scores
+    BUS ||--o{ PAKET_TREATMENT : has
+    PAKET_TREATMENT ||--o{ TREATMENT_VISIT : includes
+    TREATMENT_VISIT ||--o{ PEMAKAIAN_BAHAN : uses
+    BAHAN ||--o{ PEMAKAIAN_BAHAN : consumed_in
+    BUS ||--o{ INVOICE : billed
+
+    CUSTOMER {
+        uuid id PK
+        string nama
+        string kontak
+    }
+    BUS {
+        uuid id PK
+        uuid customer_id FK
+        string kode_bus
+        string jenis_decker
+        string konfigurasi_seat
+        string lokasi_garasi
+    }
+    JADWAL_VISITASI {
+        uuid id PK
+        uuid bus_id FK
+        date tanggal
+        time jam_estimasi
+        time jam_selesai_operasional
+    }
+    PLOTTING {
+        uuid id PK
+        uuid jadwal_id FK
+        uuid personel_id FK
+        string alat_bahan
+    }
+    PERSONEL {
+        uuid id PK
+        string nama
+        string role
+    }
+    INSPEKSI {
+        uuid id PK
+        uuid jadwal_id FK
+        string tipe
+        int jumlah_area_diperiksa
+        int jumlah_area_aktif
+        bool nimfa_ditemukan
+        bool ootheca_ditemukan
+        bool koloni_aktif_ditemukan
+        string hasil_klasifikasi
+    }
+    INSPEKSI_AREA {
+        uuid id PK
+        uuid inspeksi_id FK
+        string nama_area
+        int skor
+    }
+    PAKET_TREATMENT {
+        uuid id PK
+        uuid bus_id FK
+        string level_rekomendasi_sistem
+        string level_disepakati
+        date tanggal_mulai
+        string status_approval
+    }
+    TREATMENT_VISIT {
+        uuid id PK
+        uuid paket_id FK
+        string hari_ke
+        date tanggal
+        string dokumentasi_before
+        string dokumentasi_after
+    }
+    BAHAN {
+        uuid id PK
+        string nama_bahan
+        string satuan
+    }
+    PEMAKAIAN_BAHAN {
+        uuid id PK
+        uuid treatment_visit_id FK
+        uuid bahan_id FK
+        float jumlah_standar
+        float jumlah_aktual
+    }
+    INVOICE {
+        uuid id PK
+        uuid bus_id FK
+        string periode
+        float jumlah
+        uuid checker_id FK
+        string status
+    }
+```
 
 ### Catatan skema
 
 - `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer — memungkinkan tracking seberapa sering customer override rekomendasi.
 - `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix (level + jenis decker) terpisah dari realisasi lapangan, sesuai bagian "Jumlah Material Terpasang" di form inspeksi.
 - `INSPEKSI_AREA` menyimpan skor 0–3 per area (16 area) — sumber data untuk menghitung `jumlah_area_aktif` di tabel `INSPEKSI`.
+
+- `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer.
+- `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix (level + jenis decker) terpisah dari realisasi lapangan.
+- `INSPEKSI_AREA` menyimpan skor 0–3 per area (16 area) — sumber data untuk menghitung `jumlah_area_aktif` di tabel `INSPEKSI`.
+- `TREATMENT_VISIT.hari_ke` menyimpan label visit (H0, H+7, H+14, H+21) — komposisi per visit tetap merujuk ke `PEMAKAIAN_BAHAN`, jadi Basic (hanya H0, fogging) dan Standard/Premium (H0 + lanjutan, fog+bait+trap) sama-sama tercatat lewat struktur yang sama.

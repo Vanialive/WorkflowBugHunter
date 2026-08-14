@@ -18,6 +18,7 @@ flowchart TD
     F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap <br>sesuai level & decker"]
     G --> I
     I --> |Basic| J1["H0 - Basic<br/> fogging"]
+    I --> |Standard| J2["H0 — Standard<br/>Fog + Bait + Trap"]
 
 ```
 

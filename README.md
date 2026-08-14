@@ -1,12 +1,11 @@
 # WorkflowBugHunter
 
-# JHealth Pest Control — Bus Fogging Process
-
-Alur operasional pengendalian hama (kecoak) untuk armada bus, dari penjadwalan sampai dokumentasi tracking. Referensi: form inspeksi, form persetujuan customer, dan jadwal fogging Divisi Malang.
+# Pest Control for Bus
+Alur operasional pengendalian hama khusunya kkecoak untuk armada bus, dari penjadwalan sampai dokumentasi tracking.
+Referensi: form inspeksi & rekomendasi tingkat infestasi kecoa dan jadwal fogging unit divisi Malang
 
 ## Alur proses
-
-```mermaid
+\
 flowchart TD
     A["Jadwal & reminder visitasi<br/>Tracking H-1 / H-2 / H-3"] --> B["Kedatangan unit & inspeksi<br/>Checklist 16 area, skor 0-3"]
     B --> C["Rekap & klasifikasi<br/>Ringan / sedang / berat"]

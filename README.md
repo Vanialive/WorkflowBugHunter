@@ -7,15 +7,15 @@ Referensi: form inspeksi & rekomendasi tingkat infestasi kecoa dan jadwal foggin
 ## Alur proses
 ```mermaid
 flowchart TD
-    A["Jadwal & reminder visitasi<br/>Tracking H-1 / H-2 / H-3"] --> B["Kedatangan unit & inspeksi<br/>Checklist 16 area, skor 0-3"]
-    B --> C["Rekap & klasifikasi<br/>Ringan / sedang / berat"]
-    C --> D["Rekomendasi & persetujuan tier<br/>Disetujui di lokasi, hari yang sama"]
-    D --> E{"Keputusan customer"}
+    A["Jadwal & reminder visitasi<br/>Tracking H-1 / H-2 / H-3"] --> B["Kedatangan unit & inspeksi"]
+    B --> C["Rekap & klasifikasi<br/>Ringan / Sedang / Berat"]
+    C --> D["Rekomendasi Vendor"]
+    D --> E{"Keputusan Customer<br>persetujuan/pilihan customer"}
     E -->|Setuju| F["Setuju paket<br/>Level = rekomendasi"]
-    E -->|Pilih program lain| G["Pilih program lain<br/>Vendor vs customer dicatat"]
+    E -->|Pilih program lain| G["Pilih program lain<br/>Pilihan Customer"]
     E -->|Tunda| H["Tunda keputusan<br/>Belum eksekusi"]
     H -.kembali ke jadwal.-> A
-    F --> I["Level & standar komposisi<br/>Standar fog/bait/trap sesuai level & decker"]
+    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap sesuai level & decker"]
     G --> I
     I --> J["Eksekusi treatment H0<br/>Komposisi aktual bisa beda: diskresi TR&D + PIC lapangan"]
     J -->|Basic| M["Dokumentasi & update tracking<br/>Siklus tutup di H+28, reorder = H0 baru"]

@@ -15,15 +15,10 @@ flowchart TD
     E -->|Pilih program lain| G["Pilih program lain<br/>Pilihan Customer"]
     E -->|Tunda| H["Tunda keputusan<br/>Belum eksekusi"]
     H -.kembali ke jadwal.-> A
-    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap <br>sesuai level & decker"]
+    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap ssesuai level & decker"]
     G --> I
-    I --> J["Eksekusi treatment H0<br/>Komposisi aktual bisa beda: diskresi TR&D + PIC lapangan"]
-    J -->|Basic| M["Dokumentasi & update tracking<br/>Siklus tutup di H+28, reorder = H0 baru"]
-    J -->|Standard / Premium| K["Cadence lanjutan"]
-    K --> K1["Standard: H0 & H+14 — 2x/bulan"]
-    K --> K2["Premium: H0, H+7, H+14, H+21 — 4x/bulan"]
-    K1 --> M
-    K2 --> M
+    I --> |Basic| J1["H0 - Basic<br/> fogging"]
+
 ```
 
 ### Catatan alur

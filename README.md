@@ -17,13 +17,18 @@ flowchart TD
     H -.kembali ke jadwal.-> A
     F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap <br>sesuai level & decker"]
     G --> I
-    I --> |Basic| J1["H0 - Basic<br/> fogging"]
+    I --> |Basic| J1["H0 - Basic<br/> Fogging"]
     I --> |Standard| J2["H0 — Standard<br/>Fog + Bait + Trap"]
+    I --> |Premium| J3["H0 - Premium<br>Fog + Bait + Trap, takaran lebih besar"]
+    J1 --> M["Dokumentasi & update tracking"]
+    J2 --> K1["H+14<br/>Ulang treatment yg sama — 2x/bulan"]
+    J3 --> K2["H+7, H+14, H+21<br/>Ulang treatment yg sama — 4x/bulan"]
+    K1 --> M
+    K2 --> M
 
 ```
 
 ### Catatan alur
-
 - **Basic** = one-time treatment, selesai langsung di H0, tidak masuk cadence lanjutan.
 - **Persetujuan tier** dan **eksekusi treatment** terjadi di visit yang sama (H0) — bukan proses terpisah yang bisa menunda treatment.
 - **Pilih program lain** vs **diskresi komposisi lapangan** adalah dua hal berbeda:

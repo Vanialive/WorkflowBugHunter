@@ -15,7 +15,7 @@ flowchart TD
     E -->|Pilih program lain| G["Pilih program lain<br/>Pilihan Customer"]
     E -->|Tunda| H["Tunda keputusan<br/>Belum eksekusi"]
     H -.kembali ke jadwal.-> A
-    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap sesuai level & decker"]
+    F --> I["Level Program Treatment<br/>Program fog/gel bait/sticky trap <br>sesuai level & decker"]
     G --> I
     I --> J["Eksekusi treatment H0<br/>Komposisi aktual bisa beda: diskresi TR&D + PIC lapangan"]
     J -->|Basic| M["Dokumentasi & update tracking<br/>Siklus tutup di H+28, reorder = H0 baru"]

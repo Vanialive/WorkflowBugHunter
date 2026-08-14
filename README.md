@@ -5,7 +5,7 @@ Alur operasional pengendalian hama khusunya kkecoak untuk armada bus, dari penja
 Referensi: form inspeksi & rekomendasi tingkat infestasi kecoa dan jadwal fogging unit divisi Malang
 
 ## Alur proses
-\
+```mermaid
 flowchart TD
     A["Jadwal & reminder visitasi<br/>Tracking H-1 / H-2 / H-3"] --> B["Kedatangan unit & inspeksi<br/>Checklist 16 area, skor 0-3"]
     B --> C["Rekap & klasifikasi<br/>Ringan / sedang / berat"]

@@ -21,8 +21,8 @@ flowchart TD
     I --> |Standard| J2["H0 — Standard<br/>Fog + Bait + Trap"]
     I --> |Premium| J3["H0 - Premium<br>Fog + Bait + Trap, takaran lebih besar"]
     J1 --> M["Dokumentasi & update tracking"]
-    J2 --> K1["H+14<br/>Ulang treatment yg sama — 2x/bulan"]
-    J3 --> K2["H+7, H+14, H+21<br/>Ulang treatment yg sama — 4x/bulan"]
+    J2 --> K1["H+14<br/>Ulang treatment yg sama — <br>2x/bulan"]
+    J3 --> K2["H+7, H+14, H+21<br/>Ulang treatment yg sama — <br>4x/bulan"]
     K1 --> M
     K2 --> M
 

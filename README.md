@@ -193,29 +193,24 @@ erDiagram
 ```
 
 ### Catatan skema
-
-- `BUS` murni data konfigurasi (kode, plat, jenis armada, fasilitas) — lokasi/garasi bukan atribut bus, tapi atribut per-visit di `JADWAL_VISITASI.garasi_id`.
-- `GARASI` dan `AREA` adalah master data — mencegah duplikasi/typo teks bebas yang berulang di tiap baris inspeksi/jadwal.
-- `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer; selisih keduanya jadi indikator "pilih program lain".
-- `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix (level + jenis decker) terpisah dari realisasi lapangan (diskresi TR&D + PIC lapangan).
-- `TREATMENT_VISIT.hari_ke` menyimpan label visit (H0, H+7, H+14, H+21) per paket (siklus) — Basic cukup satu baris `H0`, Standard/Premium beberapa baris sesuai cadence.
-
+ 
+- **Identitas bus**: `kode_unik` (format `{prefix_customer}{urutan}`, misal `MTrans001`) di-generate sistem dan jadi satu-satunya acuan permanen di seluruh relasi. `nama_bus` dan `no_polisi` sengaja diperlakukan sebagai atribut yang **bisa berubah** (plat nomor bisa dipindah ke bus lain), bukan kunci identitas.
+- `BUS` sekarang murni master data (kode, nama, plat, model, type unit, seri, keterangan) — semua kondisi/fasilitas yang bisa dicek ulang tiap kunjungan dipindah ke `INSPEKSI`.
+- `BUS.type_unit` (3 nilai: Single/Double Decker/Sleeper, master data) beda level detail dari `INSPEKSI.jenis_armada` (5 nilai checklist form: Single/Double Decker Executive/Sleeper, Hybrid) — yang kedua dicek ulang tiap inspeksi.
+- `seri` nullable, belum jelas fungsinya — disimpan apa adanya sebagai string sampai dikonfirmasi ke tim lapangan.
+- `INSPEKSI` sekarang mencakup seluruh isi form: fasilitas, kondisi umum unit (kebersihan interior/sumber pangan/kelembapan), faktor risiko operasional, checklist 16 area, dan temuan biologis. Faktor risiko (`risiko_*`) **tidak memengaruhi** `hasil_klasifikasi` — itu dasar rekomendasi sanitasi terpisah ke customer, sesuai catatan di form.
+- `CUSTOMER` = brand (Mtrans, Medali Mas, Bagong). `CUSTOMER_CABANG` = cabang/wilayah di bawah brand, masing-masing dengan PIC approval dan info pembayaran sendiri. `BUS.cabang_id` nunjuk ke cabang, bukan langsung ke brand.
+- `GARASI` dan `AREA` adalah master data — mencegah duplikasi/typo teks bebas.
+- `JADWAL_VISITASI` punya waktu **realisasi** (`jam_kedatangan_aktual`, `jam_mulai_fogging_aktual`, `jam_berangkat_aktual`) terpisah dari `jam_estimasi`, plus `situasi_fogging` (shift) dan `keterangan`.
+- `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer.
+- `TREATMENT_VISIT` punya `inspeksi_done`/`fogging_done` (checklist progres), `dokumentasi_lengkap` (boolean), dan `catatan_lapangan`.
+- `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix terpisah dari realisasi lapangan.
 ## Belum dimodelkan (open items)
-
-Bagian ini sengaja belum jadi tabel — masih nunggu keputusan bisnis:
-
+ 
 - Hak akses per role (management / lapangan / customer) — termasuk apakah visitasi ke-2/ke-3 kelihatan ke customer atau cuma hasil akhir.
 - Detail invoicing (checker vs printer vs penanggung jawab).
 - Link supply chain ke keuangan (selisih pemakaian bahan vs pengadaan).
 - Perhitungan lembur/insentif HR dari data `PLOTTING`.
-
-### Catatan skema
-
-- `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer — memungkinkan tracking seberapa sering customer override rekomendasi.
-- `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix (level + jenis decker) terpisah dari realisasi lapangan, sesuai bagian "Jumlah Material Terpasang" di form inspeksi.
-- `INSPEKSI_AREA` menyimpan skor 0–3 per area (16 area) — sumber data untuk menghitung `jumlah_area_aktif` di tabel `INSPEKSI`.
-
-- `PAKET_TREATMENT.level_rekomendasi_sistem` vs `level_disepakati` memisahkan rekomendasi otomatis dari keputusan final customer.
-- `PEMAKAIAN_BAHAN.jumlah_standar` vs `jumlah_aktual` menyimpan standar dari tabel matrix (level + jenis decker) terpisah dari realisasi lapangan.
-- `INSPEKSI_AREA` menyimpan skor 0–3 per area (16 area) — sumber data untuk menghitung `jumlah_area_aktif` di tabel `INSPEKSI`.
-- `TREATMENT_VISIT.hari_ke` menyimpan label visit (H0, H+7, H+14, H+21) — komposisi per visit tetap merujuk ke `PEMAKAIAN_BAHAN`, jadi Basic (hanya H0, fogging) dan Standard/Premium (H0 + lanjutan, fog+bait+trap) sama-sama tercatat lewat struktur yang sama.
+- Validasi apakah wilayah `CUSTOMER_CABANG` selalu selaras dengan `GARASI`.
+- Fungsi kolom `seri` pada `BUS` — belum dikonfirmasi.
+- Apakah perubahan `no_polisi` pada bus yang sama perlu dicatat sebagai riwayat (audit trail).

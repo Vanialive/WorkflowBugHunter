@@ -40,7 +40,8 @@ flowchart TD
 - **H+28** bukan tahap treatment, jadi jika H+28 akan reorder dihitung sebagai H0 baru
 
 
-## Skema database (ERD) 
+## Skema database (ERD)
+ 
 ```mermaid
 erDiagram
     CUSTOMER ||--o{ CUSTOMER_CABANG : has
@@ -49,11 +50,12 @@ erDiagram
     BUS ||--o{ JADWAL_VISITASI : scheduled
     JADWAL_VISITASI ||--o{ PLOTTING : assigns
     PERSONEL ||--o{ PLOTTING : assigned_to
-    JADWAL_VISITASI ||--o{ INSPEKSI : produces
+    JADWAL_VISITASI ||--o| INSPEKSI : produces
     INSPEKSI ||--o{ INSPEKSI_AREA : scores
     AREA ||--o{ INSPEKSI_AREA : scored_in
+    JADWAL_VISITASI ||--o| TREATMENT_VISIT : includes
     BUS ||--o{ PAKET_TREATMENT : has
-    PAKET_TREATMENT ||--o{ TREATMENT_VISIT : includes
+    PAKET_TREATMENT ||--o{ TREATMENT_VISIT : belongs_to
     TREATMENT_VISIT ||--o{ PEMAKAIAN_BAHAN : uses
     BAHAN ||--o{ PEMAKAIAN_BAHAN : consumed_in
     BUS ||--o{ INVOICE : billed
@@ -160,9 +162,9 @@ erDiagram
     }
     TREATMENT_VISIT {
         uuid id PK
+        uuid jadwal_id FK
         uuid paket_id FK
         string hari_ke
-        date tanggal
         bool inspeksi_done
         bool fogging_done
         bool dokumentasi_lengkap
@@ -194,6 +196,7 @@ erDiagram
 
 ### Catatan skema
  
+- **Satu kunjungan = satu `JADWAL_VISITASI`**, baik itu kunjungan inspeksi awal (H0) maupun treatment lanjutan (H+7/H+14/H+21) — semuanya bikin baris baru di sini, masing-masing dengan plotting & jam aktualnya sendiri. `INSPEKSI` dan `TREATMENT_VISIT` nempel opsional (maks satu) ke tiap `JADWAL_VISITASI`, jadi inspeksi ulang otomatis kebentuk lewat kunjungan baru, bukan numpuk banyak inspeksi di satu jadwal.
 - **Identitas bus**: `kode_unik` (format `{prefix_customer}{urutan}`, misal `MTrans001`) di-generate sistem dan jadi satu-satunya acuan permanen di seluruh relasi. `nama_bus` dan `no_polisi` sengaja diperlakukan sebagai atribut yang **bisa berubah** (plat nomor bisa dipindah ke bus lain), bukan kunci identitas.
 - `BUS` sekarang murni master data (kode, nama, plat, model, type unit, seri, keterangan) — semua kondisi/fasilitas yang bisa dicek ulang tiap kunjungan dipindah ke `INSPEKSI`.
 - `BUS.type_unit` (3 nilai: Single/Double Decker/Sleeper, master data) beda level detail dari `INSPEKSI.jenis_armada` (5 nilai checklist form: Single/Double Decker Executive/Sleeper, Hybrid) — yang kedua dicek ulang tiap inspeksi.

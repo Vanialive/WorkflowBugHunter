@@ -40,11 +40,12 @@ flowchart TD
 - **H+28** bukan tahap treatment, jadi jika H+28 akan reorder dihitung sebagai H0 baru
 
 
-
 ## Skema database (ERD)
+ 
 ```mermaid
 erDiagram
-    CUSTOMER ||--o{ BUS : owns
+    CUSTOMER ||--o{ CUSTOMER_CABANG : has
+    CUSTOMER_CABANG ||--o{ BUS : owns
     GARASI ||--o{ JADWAL_VISITASI : hosts
     BUS ||--o{ JADWAL_VISITASI : scheduled
     JADWAL_VISITASI ||--o{ PLOTTING : assigns
@@ -57,15 +58,22 @@ erDiagram
     TREATMENT_VISIT ||--o{ PEMAKAIAN_BAHAN : uses
     BAHAN ||--o{ PEMAKAIAN_BAHAN : consumed_in
     BUS ||--o{ INVOICE : billed
-
+ 
     CUSTOMER {
         uuid id PK
         string nama
-        string kontak
+    }
+    CUSTOMER_CABANG {
+        uuid id PK
+        uuid customer_id FK
+        string nama_cabang
+        string wilayah
+        string pic_approval
+        string info_pembayaran
     }
     BUS {
         uuid id PK
-        uuid customer_id FK
+        uuid cabang_id FK
         string kode_bus
         string nomor_polisi
         string jenis_armada
@@ -164,6 +172,7 @@ erDiagram
         string status
     }
 ```
+
 
 ### Catatan skema
 

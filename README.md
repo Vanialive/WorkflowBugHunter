@@ -40,8 +40,7 @@ flowchart TD
 - **H+28** bukan tahap treatment, jadi jika H+28 akan reorder dihitung sebagai H0 baru
 
 
-## Skema database (ERD)
- 
+## Skema database (ERD) 
 ```mermaid
 erDiagram
     CUSTOMER ||--o{ CUSTOMER_CABANG : has
@@ -81,12 +80,6 @@ erDiagram
         string type_unit
         string seri
         string keterangan
-        bool punya_pantry
-        bool punya_toilet
-        bool punya_dispenser
-        bool punya_sleeper_pod
-        bool punya_rak_bagasi_atas
-        bool punya_lantai_atas
     }
     GARASI {
         uuid id PK
@@ -121,6 +114,20 @@ erDiagram
         uuid id PK
         uuid jadwal_id FK
         string tipe
+        string jenis_armada
+        bool punya_pantry
+        bool punya_toilet
+        bool punya_dispenser
+        bool punya_sleeper_pod
+        bool punya_rak_bagasi_atas
+        bool punya_lantai_atas
+        string kondisi_kebersihan_interior
+        string kondisi_sumber_pangan
+        string kondisi_kelembapan
+        bool risiko_sisa_makanan
+        bool risiko_banyak_sampah
+        bool risiko_area_lembap
+        bool risiko_celah_persembunyian
         int jumlah_area_diperiksa
         int jumlah_area_aktif
         int jumlah_lokasi_nimfa
@@ -184,7 +191,6 @@ erDiagram
         string status
     }
 ```
-
 
 ### Catatan skema
 

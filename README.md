@@ -73,10 +73,14 @@ erDiagram
     }
     BUS {
         uuid id PK
+        string kode_unik
         uuid cabang_id FK
-        string kode_bus
-        string nomor_polisi
-        string jenis_armada
+        string nama_bus
+        string no_polisi
+        string model_bis
+        string type_unit
+        string seri
+        string keterangan
         bool punya_pantry
         bool punya_toilet
         bool punya_dispenser
@@ -96,7 +100,11 @@ erDiagram
         uuid garasi_id FK
         date tanggal
         time jam_estimasi
-        time jam_selesai_operasional
+        time jam_kedatangan_aktual
+        time jam_mulai_fogging_aktual
+        time jam_berangkat_aktual
+        string situasi_fogging
+        string keterangan
     }
     PLOTTING {
         uuid id PK
@@ -115,9 +123,9 @@ erDiagram
         string tipe
         int jumlah_area_diperiksa
         int jumlah_area_aktif
-        bool nimfa_ditemukan
-        bool ootheca_ditemukan
-        bool koloni_aktif_ditemukan
+        int jumlah_lokasi_nimfa
+        int jumlah_lokasi_ootheca
+        int jumlah_lokasi_koloni_aktif
         string hasil_klasifikasi
     }
     AREA {
@@ -148,6 +156,10 @@ erDiagram
         uuid paket_id FK
         string hari_ke
         date tanggal
+        bool inspeksi_done
+        bool fogging_done
+        bool dokumentasi_lengkap
+        string catatan_lapangan
         string dokumentasi_before
         string dokumentasi_after
     }

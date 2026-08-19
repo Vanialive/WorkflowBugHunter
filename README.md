@@ -48,14 +48,14 @@ erDiagram
     CUSTOMER_CABANG ||--o{ BUS : owns
     GARASI ||--o{ JADWAL_VISITASI : hosts
     BUS ||--o{ JADWAL_VISITASI : scheduled
-    JADWAL_VISITASI ||--o{ PLOTTING : assigns
-    PERSONEL ||--o{ PLOTTING : assigned_to
     JADWAL_VISITASI ||--o| INSPEKSI : produces
     INSPEKSI ||--o{ INSPEKSI_AREA : scores
     AREA ||--o{ INSPEKSI_AREA : scored_in
-    JADWAL_VISITASI ||--o| TREATMENT_VISIT : includes
+    JADWAL_VISITASI ||--o{ TREATMENT_VISIT : generates
     BUS ||--o{ PAKET_TREATMENT : has
     PAKET_TREATMENT ||--o{ TREATMENT_VISIT : belongs_to
+    TREATMENT_VISIT ||--o{ PLOTTING : assigns
+    PERSONEL ||--o{ PLOTTING : assigned_to
     TREATMENT_VISIT ||--o{ PEMAKAIAN_BAHAN : uses
     BAHAN ||--o{ PEMAKAIAN_BAHAN : consumed_in
     BUS ||--o{ INVOICE : billed
@@ -95,22 +95,6 @@ erDiagram
         uuid garasi_id FK
         date tanggal
         time jam_estimasi
-        time jam_kedatangan_aktual
-        time jam_mulai_fogging_aktual
-        time jam_berangkat_aktual
-        string situasi_fogging
-        string keterangan
-    }
-    PLOTTING {
-        uuid id PK
-        uuid jadwal_id FK
-        uuid personel_id FK
-        string alat_bahan
-    }
-    PERSONEL {
-        uuid id PK
-        string nama
-        string role
     }
     INSPEKSI {
         uuid id PK
@@ -165,12 +149,28 @@ erDiagram
         uuid jadwal_id FK
         uuid paket_id FK
         string hari_ke
+        date tanggal
+        time jam_kedatangan_aktual
+        time jam_mulai_fogging_aktual
+        time jam_berangkat_aktual
+        string situasi_fogging
         bool inspeksi_done
         bool fogging_done
         bool dokumentasi_lengkap
         string catatan_lapangan
         string dokumentasi_before
         string dokumentasi_after
+    }
+    PLOTTING {
+        uuid id PK
+        uuid treatment_visit_id FK
+        uuid personel_id FK
+        string alat_bahan
+    }
+    PERSONEL {
+        uuid id PK
+        string nama
+        string role
     }
     BAHAN {
         uuid id PK
@@ -193,10 +193,10 @@ erDiagram
         string status
     }
 ```
-
+ 
 ### Catatan skema
  
-- **Satu kunjungan = satu `JADWAL_VISITASI`**, baik itu kunjungan inspeksi awal (H0) maupun treatment lanjutan (H+7/H+14/H+21) — semuanya bikin baris baru di sini, masing-masing dengan plotting & jam aktualnya sendiri. `INSPEKSI` dan `TREATMENT_VISIT` nempel opsional (maks satu) ke tiap `JADWAL_VISITASI`, jadi inspeksi ulang otomatis kebentuk lewat kunjungan baru, bukan numpuk banyak inspeksi di satu jadwal.
+- **`JADWAL_VISITASI` adalah header ringan** (bus, garasi, tanggal awal) — bukan tempat detail per-kunjungan. **`TREATMENT_VISIT` yang mewakili tiap kunjungan aktual** (H0, H+7, H+14, H+21), satu `JADWAL_VISITASI` bisa menghasilkan banyak `TREATMENT_VISIT` sesuai cadence paket. Field `hari_ke` di `TREATMENT_VISIT` yang jadi penanda visit itu urutan ke berapa dalam siklus. Jam aktual, situasi fogging, dan `PLOTTING` (personel) juga dipindah ke level `TREATMENT_VISIT` karena beda-beda tiap kunjungan. `INSPEKSI` tetap nempel ke `JADWAL_VISITASI` karena hasilnya yang menentukan `PAKET_TREATMENT` — harus ada duluan sebelum siklus `TREATMENT_VISIT` mulai.
 - **Identitas bus**: `kode_unik` (format `{prefix_customer}{urutan}`, misal `MTrans001`) di-generate sistem dan jadi satu-satunya acuan permanen di seluruh relasi. `nama_bus` dan `no_polisi` sengaja diperlakukan sebagai atribut yang **bisa berubah** (plat nomor bisa dipindah ke bus lain), bukan kunci identitas.
 - `BUS` sekarang murni master data (kode, nama, plat, model, type unit, seri, keterangan) — semua kondisi/fasilitas yang bisa dicek ulang tiap kunjungan dipindah ke `INSPEKSI`.
 - `BUS.type_unit` (3 nilai: Single/Double Decker/Sleeper, master data) beda level detail dari `INSPEKSI.jenis_armada` (5 nilai checklist form: Single/Double Decker Executive/Sleeper, Hybrid) — yang kedua dicek ulang tiap inspeksi.
